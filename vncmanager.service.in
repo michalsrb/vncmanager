@@ -1,0 +1,10 @@
+[Unit]
+Description=VNC manager
+After=network.target
+
+[Service]
+User=vnc
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/vncmanager
+
+[Install]
+WantedBy=multi-user.target
