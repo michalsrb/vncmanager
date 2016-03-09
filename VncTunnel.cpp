@@ -362,6 +362,10 @@ void VncTunnel::processSetEncodings()
             }
             break;
 
+        default:
+            // Other encodings are unknown to us and so not supported.
+            // Empty default case to silence Wswitch.
+            break;
         }
 
         if ((int32_t)encoding >= (int32_t)EncodingType::JpegQualityLowest && (int32_t)encoding <= (int32_t)EncodingType::JpegQualityHighest) {
@@ -472,7 +476,7 @@ void VncTunnel::processFramebufferUpdate()
         case EncodingType::CopyRect:
         case EncodingType::Cursor:
         case EncodingType::XCursor: {
-            std::size_t bufferSize;
+            std::size_t bufferSize = 0;
 
             switch (rectangle.encodingType) {
             case EncodingType::Raw:
@@ -492,7 +496,7 @@ void VncTunnel::processFramebufferUpdate()
                 break;
 
             default:
-                assert(!"Not reached.");
+                assert(!"Not reached."); // This switch is supposed to handle all encoding types that the outter switch selects. This won't be reached unless one is changed and the other not.
                 break;
             }
 

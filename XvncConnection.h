@@ -60,7 +60,7 @@ public:
     {
     public:
         ConnectionException(const XvncConnection *faultyConnection, std::string message)
-            : m_faultyConnection(faultyConnection ), std::runtime_error(message)
+            : std::runtime_error(message), m_faultyConnection(faultyConnection)
         {}
 
         const XvncConnection *faultyConnection() const { return m_faultyConnection; }

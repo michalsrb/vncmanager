@@ -41,10 +41,10 @@
 
 GreeterConnection::GreeterConnection(GreeterManager &greeterManager, std::string display, std::string xauthFilename, NewSessionHandler newSessionHandler, OpenSessionHandler openSessionHandler)
     : m_greeterManager(greeterManager)
-    , m_in(&m_greeterOut)
-    , m_out(&m_greeterIn)
     , m_newSessionHandler(newSessionHandler)
     , m_openSessionHandler(openSessionHandler)
+    , m_in(&m_greeterOut)
+    , m_out(&m_greeterIn)
 {
     int greeterStdinPipe[2];
     if (pipe(greeterStdinPipe) < 0) {
@@ -77,14 +77,17 @@ GreeterConnection::GreeterConnection(GreeterManager &greeterManager, std::string
         sigemptyset(&sigmask);
         sigprocmask(SIG_SETMASK, &sigmask, nullptr);
 
-        // Prepare environment
+        // Prepare arguments and environment
+        std::string greeterBinary = Configuration::options["greeter"].as<std::string>();
+
+        const char *const argv[] = { greeterBinary.c_str(), nullptr };
+
         std::string envDisplay = "DISPLAY=" + display;
         std::string envXauthority = "XAUTHORITY=" + xauthFilename;
         const char *const envp[] = { envDisplay.c_str(), envXauthority.c_str(), nullptr };
 
         // Execute
-        std::string greeterBinary = Configuration::options["greeter"].as<std::string>();
-        if (execve(greeterBinary.c_str(), nullptr, const_cast<char *const *>(envp)) < 0) { // Note: const_cast is ok here, the execve's envp parameter could be const, but it isn't for compability reasons.
+        if (execve(greeterBinary.c_str(), const_cast<char *const *>(argv), const_cast<char *const *>(envp)) < 0) { // Note: const_cast is ok here, the execve's envp parameter could be const, but it isn't for compability reasons.
             exit(1);
         }
     }

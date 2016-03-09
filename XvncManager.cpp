@@ -36,7 +36,7 @@ std::shared_ptr<Xvnc> XvncManager::createSession(bool queryDisplayManager)
     std::lock_guard<std::recursive_mutex> guard(m_lock);
 
     auto ptr = std::make_shared<Xvnc>(*this, m_nextId++, queryDisplayManager);
-    auto result = m_xvncs.insert(std::make_pair(ptr->id(), ptr));
+    [[gnu::unused]] auto result = m_xvncs.insert(std::make_pair(ptr->id(), ptr));
     assert(result.second); // New Xvnc object was created, it must be unique in the set, unless there is something very wrong.
 
     return ptr;

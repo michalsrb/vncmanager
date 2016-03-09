@@ -44,8 +44,8 @@
 
 
 Server::Server()
-    : m_controlManager(m_vncManager)
-    , m_greeterManager(m_vncManager)
+    : m_greeterManager(m_vncManager)
+    , m_controlManager(m_vncManager)
 {
     prepareSignals();
 

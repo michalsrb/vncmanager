@@ -155,7 +155,7 @@ void XvncConnection::handleVncAuthSecurityWithPassword(std::string password)
 
     // Convert the password into key
     unsigned char key[8];
-    for (int i = 0; i < sizeof(key); i++) {
+    for (std::string::size_type i = 0; i < sizeof(key); i++) {
         if (i >= password.size()) {
             key[i] = '\0';
         } else {
@@ -219,6 +219,11 @@ void XvncConnection::handleVeNCryptSecurity()
         case VeNCryptSubtype::None:
         case VeNCryptSubtype::VncAuth:
             selectedSubtype = subtype;
+            break;
+
+        default:
+            // Other VeNCrypt subtypes are not supported.
+            // Empty default case to silence Wswitch.
             break;
         }
 

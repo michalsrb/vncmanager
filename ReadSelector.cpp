@@ -40,7 +40,7 @@ void ReadSelector::clear()
 
 void ReadSelector::addFD(int fd, ReadSelector::Handler handler)
 {
-    auto iter = m_fds.insert(std::make_pair(fd, handler));
+    [[gnu::unused]] auto iter = m_fds.insert(std::make_pair(fd, handler));
 
     assert(iter.second); // It would fail to insert if it was already tehre. Calling this method with fd that was already in is illegal.
 }
