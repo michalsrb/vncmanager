@@ -225,7 +225,13 @@ void Xvnc::execute(bool queryDisplayManager)
             "-MaxDisconnectionTime=5",
             "-securitytypes=none",
             "-displayfd", displayNumberPipeText.c_str(),
-            "-trustxclient"
+            "-AllowOverride="
+                // These parameters are normally allowed by default
+                "Desktop,AcceptPointerEvents,SendCutText,AcceptCutText,"
+                // Additionally allow clients to configure sharing related parameters
+                "MaxDisconnectionTime,MaxConnectionTime,MaxIdleTime,QueryConnect,QueryConnectTimeOut,AlwaysShared,NeverShared,DisconnectClients,"
+                // Additionally allow clients to set up some security related parameters
+                "SecurityTypes,Password,PlainUsers"
         };
         if (queryDisplayManager) {
             argv.push_back("-query");
