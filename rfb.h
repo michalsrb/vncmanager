@@ -483,9 +483,9 @@ struct VeNCryptVersion {
 
 enum class VeNCryptSubtype : uint32_t   // Contains only the supported subtypes
 {
-    Invalid = SecurityType::Invalid,
-    None = SecurityType::None,
-    VncAuth = SecurityType::VncAuth,
+    Invalid = (uint32_t) SecurityType::Invalid,
+    None = (uint32_t) SecurityType::None,
+    VncAuth = (uint32_t) SecurityType::VncAuth,
 
     Plain = 256,   // (used in direction towards local Xvnc)
     TLSNone = 257,
