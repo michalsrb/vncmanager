@@ -61,7 +61,12 @@ inline void throw_errno(const std::string &what_arg)
 /**
  * EOF for Stream.
  */
-class eof_exception : std::exception {}; // TODO: Move/change?
+class eof_exception : public std::exception {
+public:
+    virtual const char* what() const noexcept {
+        return "EOF";
+    }
+};
 
 /**
  * Helper class that can be used to assure closing of file descriptor on scope exit.
