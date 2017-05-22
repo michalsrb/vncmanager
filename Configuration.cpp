@@ -87,6 +87,8 @@ bool Configuration::parse(int argc, char *argv[], const char *config)
 
         ("query", po::value<std::string>()->default_value("localhost"), "Address of XDMCP server that Xvnc should query.")
 
+        ("geometry", po::value<std::string>()->default_value("1024x768"), "<width>x<height> The value of geometry parameter given to Xvnc. Sets the initial resolution.")
+
         ("xvnc",    po::value<std::string>()->default_value("/usr/bin/Xvnc"),               "path to Xvnc executable")
         ("greeter", po::value<std::string>()->default_value("/usr/bin/vncmanager-greeter"), "path to Greeter executable")
         ("xauth",   po::value<std::string>()->default_value("/usr/bin/xauth"),              "path to xauth executable")

@@ -225,6 +225,7 @@ void Xvnc::execute(bool queryDisplayManager)
             "-MaxDisconnectionTime=5",
             "-securitytypes=none",
             "-displayfd", displayNumberPipeText.c_str(),
+            "-geometry", Configuration::options["geometry"].as<std::string>().c_str(),
             "-AllowOverride="
                 // These parameters are normally allowed by default
                 "Desktop,AcceptPointerEvents,SendCutText,AcceptCutText,"
