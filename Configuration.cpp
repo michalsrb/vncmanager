@@ -64,6 +64,22 @@ static void validate(boost::any &v, std::vector<std::string> const &tokens, VeNC
         throw po::invalid_option_value("No security type configured.");
 }
 
+static void validate(boost::any &v, std::vector<std::string> const &tokens, XvncArgList *target_type, int /* boost template trickery */)
+{
+    if (v.empty())
+        v = boost::any(XvncArgList());
+
+    XvncArgList *p = boost::any_cast<XvncArgList>(&v);
+
+    boost::escaped_list_separator<char> sep('\\', ' ', '\"');
+    for (const std::string & token : tokens) {
+        boost::tokenizer<boost::escaped_list_separator<char>> tok(token, sep);
+        for (auto str : tok) {
+            p->values.push_back(str);
+        }
+    }
+}
+
 bool Configuration::parse(int argc, char *argv[], const char *config)
 {
     VeNCryptSubtypesList defaultSecurity = { VeNCryptSubtype::TLSNone, VeNCryptSubtype::X509None, VeNCryptSubtype::None };
@@ -92,7 +108,9 @@ bool Configuration::parse(int argc, char *argv[], const char *config)
         ("xvnc",    po::value<std::string>()->default_value("/usr/bin/Xvnc"),               "path to Xvnc executable")
         ("greeter", po::value<std::string>()->default_value("/usr/bin/vncmanager-greeter"), "path to Greeter executable")
         ("xauth",   po::value<std::string>()->default_value("/usr/bin/xauth"),              "path to xauth executable")
-        ("rundir",  po::value<std::string>()->default_value("/run/vncmanager"),             "path to run directory");
+        ("rundir",  po::value<std::string>()->default_value("/run/vncmanager"),             "path to run directory")
+
+        ("xvnc-args", po::value<XvncArgList>()->multitoken(), "Additional arguments that will be passed to Xvnc. Take care to not overwrite arguments set by vncmanager.");
 
     po::options_description tls("TLS");
     tls.add_options()

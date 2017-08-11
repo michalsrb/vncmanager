@@ -29,6 +29,13 @@
 
 #include <boost/program_options.hpp>
 
+
+/// Wrapper struct to allow custom parsing
+struct XvncArgList
+{
+    std::vector<std::string> values;
+};
+
 class Configuration
 {
 public:

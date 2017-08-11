@@ -246,6 +246,15 @@ void Xvnc::execute(bool queryDisplayManager)
             argv.push_back("-desktop");
             argv.push_back("VNC manager");
         }
+
+        XvncArgList xvnc_args;
+        if (!Configuration::options["xvnc-args"].empty()) {
+            xvnc_args = Configuration::options["xvnc-args"].as<XvncArgList>();
+        }
+        for (auto &xvnc_arg : xvnc_args.values) {
+            argv.push_back(xvnc_arg.c_str());
+        }
+
         argv.push_back(nullptr);
 
         // Execute
