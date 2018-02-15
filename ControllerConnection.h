@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include <boost/iostreams/categories.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
@@ -78,8 +79,10 @@ private:
     std::shared_ptr<Xvnc> m_xvnc;
 
     int m_fd;
-    boost::iostreams::stream_buffer<boost::iostreams::file_descriptor> m_controllerStreamBuffer;
-    std::iostream m_controllerStream;
+    boost::iostreams::stream_buffer<boost::iostreams::file_descriptor, std::char_traits<char>, std::allocator<char>, boost::iostreams::input> m_controllerStreamBufferIn;
+    boost::iostreams::stream_buffer<boost::iostreams::file_descriptor, std::char_traits<char>, std::allocator<char>, boost::iostreams::output> m_controllerStreamBufferOut;
+    std::istream m_controllerStreamIn;
+    std::ostream m_controllerStreamOut;
 };
 
 #endif // CONTROLLERCONNECTION_H

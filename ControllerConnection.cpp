@@ -38,8 +38,10 @@
 ControllerConnection::ControllerConnection(XvncManager &vncManager, int fd)
     : m_vncManager(vncManager)
     , m_fd(fd)
-    , m_controllerStreamBuffer(boost::iostreams::file_descriptor(fd, boost::iostreams::close_handle))
-    , m_controllerStream(&m_controllerStreamBuffer)
+    , m_controllerStreamBufferIn(boost::iostreams::file_descriptor(fd, boost::iostreams::close_handle))
+    , m_controllerStreamBufferOut(boost::iostreams::file_descriptor(fd, boost::iostreams::never_close_handle))
+    , m_controllerStreamIn(&m_controllerStreamBufferIn)
+    , m_controllerStreamOut(&m_controllerStreamBufferOut)
 {}
 
 void ControllerConnection::start()
@@ -48,7 +50,7 @@ void ControllerConnection::start()
 
     try {
         if (initialize()) {
-            while (m_controllerStream.good()) {
+            while (m_controllerStreamIn.good()) {
                 receive();
             }
         }
@@ -64,19 +66,19 @@ void ControllerConnection::start()
 bool ControllerConnection::initialize()
 {
     int displayNumber;
-    m_controllerStream >> displayNumber;
+    m_controllerStreamIn >> displayNumber;
 
     m_xvnc = m_vncManager.getSessionByDisplayNumber(displayNumber);
     if (m_xvnc) {
-        m_controllerStream << "OK" << std::endl;
-        m_controllerStream.flush();
+        m_controllerStreamOut << "OK" << std::endl;
+        m_controllerStreamOut.flush();
     } else {
         Log::notice() << "Controller " << (intptr_t)this << " asked for display number " << displayNumber << " which is not managed by vncmanager." << std::endl;
         return false;
     }
 
     std::string key;
-    m_controllerStream >> key;
+    m_controllerStreamIn >> key;
 
     for (int tries = 0; ; tries++) {
         if (m_xvnc->isKeyApproved(key)) {
@@ -91,8 +93,8 @@ bool ControllerConnection::initialize()
         std::this_thread::sleep_for(std::chrono::milliseconds(100)); // TODO: Tune
     }
 
-    m_controllerStream << "OK" << std::endl;
-    m_controllerStream.flush();
+    m_controllerStreamOut << "OK" << std::endl;
+    m_controllerStreamOut.flush();
 
     struct ucred ucred;
     socklen_t len = sizeof(struct ucred);
@@ -111,11 +113,11 @@ bool ControllerConnection::initialize()
 void ControllerConnection::receive()
 {
     std::string cmd;
-    m_controllerStream >> cmd;
+    m_controllerStreamIn >> cmd;
 
     if (cmd == "VISIBLE") {
         bool yes;
-        m_controllerStream >> yes;
+        m_controllerStreamIn >> yes;
         m_xvnc->markVisible(yes);
         return;
     }
